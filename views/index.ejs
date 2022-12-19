@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Family tree</title>
+	</head>
+	<body>
+		<form action="/new-person" method="GET">
+			<button type="submit">New Person</button>
+		</form>
+		<form action="/new-relationship" method="GET">
+			<button type="submit">New Relationship</button>
+		</form>
+		<table>
+			<thead>
+				<tr>
+					<th>Persons</th>
+				</tr>
+				<tr>
+					<th>First Name</th>
+					<th>Last Name</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% for (let record of locals.result.records) { %>
+					<tr>
+						<td><%= record.get(0).properties.first_name %></td>
+						<td><%= record.get(0).properties.last_name %></td>
+					</tr>
+				<% } %>
+			</tbody>
+		</table>
+	</body>
+</html>

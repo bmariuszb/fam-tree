@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>New Relationship</title>
+</head>
+<body>
+	<form action="/" method="GET">
+		<button type="submit">Main Page</button>
+	</form>
+	<form action="/new-relationship" method="POST">
+		<table>
+			<tr>
+				<td>
+					<label for="person1_first_name">First Name:</label><br>
+					<input type="text" id="person1_first_name" name="person1_first_name"><br>
+					<label for="person1_last_name">Last Name:</label><br>
+					<input type="text" id="person1_last_name" name="person1_last_name"><br>
+					<label for="person1_id">ID (optional):</label><br>
+					<input type="text" id="person1_id" name="person1_id"><br>
+				</td>
+				<td>
+					<label for="relation_type">Is a </label>
+					<select id="relation_type" name="relation_type">
+						<option value="husband">Husband of</option>
+						<option value="wife">Wife of</option>
+						<option value="boyfriend">Boyfriend of</option>
+						<option value="girlfriend">Girlfriend of</option>
+						<option value="daughter">Daughter of</option>
+						<option value="son">Son of</option>
+					</select><br>
+				</td>
+				<td>
+					<label for="person2_first_name">First Name:</label><br>
+					<input type="text" id="person2_first_name" name="person2_first_name"><br>
+					<label for="person2_last_name">Last Name:</label><br>
+					<input type="text" id="person2_last_name" name="person2_last_name"><br>
+					<label for="person2_id">ID (optional):</label><br>
+					<input type="text" id="person2_id" name="person2_id"><br>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<button type="submit">Submit</button>
+				</td>
+			</tr>
+		</table>
+	</form> 
+		<label for="user1">User 1:</label>
+		<select id="user1" name="user1">
+		<% users.forEach(function(user) { %>
+			<option value="<%= user.id %>"><%= user.first_name %> <%= user.last_name %></option>
+		<% }); %>
+		</select>
+		<br>
+		<label for="user2">User 2:</label>
+		<select id="user2" name="user2">
+		<% users.forEach(function(user) { %>
+			<option value="<%= user.id %>"><%= user.first_name %> <%= user.last_name %></option>
+		<% }); %>
+		</select>
+		<br>
+		<label for="rel_type">Relationship type:</label>
+		<input type="text" id="rel_type" name="rel_type">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+</body>
+</html>

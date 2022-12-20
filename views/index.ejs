@@ -3,32 +3,98 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Family tree</title>
+		<style>
+			table {
+				border-collapse: collapse;
+				border: 1px solid black;
+			}
+			td, th {
+				border: 1px solid black;
+				text-align: center;
+				padding: 10px;
+			}
+		</style>
 	</head>
 	<body>
 		<form action="/new-person" method="GET">
 			<button type="submit">New Person</button>
 		</form>
-		<form action="/new-relationship" method="GET">
-			<button type="submit">New Relationship</button>
+		<form action="/new-relation" method="GET">
+			<button type="submit">New Relation</button>
 		</form>
 		<table>
 			<thead>
 				<tr>
-					<th>Persons</th>
+					<th colspan="4">Persons</th>
 				</tr>
 				<tr>
 					<th>First Name</th>
 					<th>Last Name</th>
+					<th colspan="2">Actions</th>
 				</tr>
 			</thead>
 			<tbody>
-				<% for (let record of locals.result.records) { %>
+				<% for (let person of locals.persons) { %>
 					<tr>
-						<td><%= record.get(0).properties.first_name %></td>
-						<td><%= record.get(0).properties.last_name %></td>
+						<td><%= person.first_name %></td>
+						<td><%= person.last_name %></td>
+						<td>
+							<form action="/update-person" method="GET">
+							<input type="hidden" name="first_name" value="<%= person.first_name %>">
+							<input type="hidden" name="last_name" value="<%= person.last_name %>">
+							<button type="submit">Change</button>
+							</form>
+						</td>
+						<td>
+							<form action="/delete-person" method="POST">
+							<input type="hidden" name="first_name" value="<%= person.first_name %>">
+							<input type="hidden" name="last_name" value="<%= person.last_name %>">
+							<button type="submit">Delete</button>
+							</form>
+						</td>
 					</tr>
 				<% } %>
 			</tbody>
+		</table>
+		<table>
+			<thead>
+				<tr>
+					<th colspan="5">Relations</th>
+				</tr>
+				<tr>
+					<th>Full Name</th>
+					<th>Relation type</th>
+					<th>Full Name</th>
+					<th colspan="2">Actions</th>
+				</tr>
+			</thead>
+			<% for (let relation of locals.relations) { %>
+				<tr>
+					<td><%= relation.person1_first_name %> <%= relation.person1_last_name %></td>
+					<td>---<%= relation.relation %>--></td>
+					<td><%= relation.person2_first_name %> <%= relation.person2_last_name %></td>
+					<td>
+						<form action="/update-relation" method="GET">
+							<input type="hidden" name="person2_first_name" value="<%= relation.person1_first_name %>">
+							<input type="hidden" name="person2_last_name" value="<%= relation.person1_last_name %>">
+							<input type="hidden" name="person1_first_name" value="<%= relation.person2_first_name %>">
+							<input type="hidden" name="person1_last_name" value="<%= relation.person2_last_name %>">
+							<input type="hidden" name="relation" value="<%= relation.relation %>">
+							<button type="submit">Change</button>
+						</form>
+					</td>
+					<td>
+						<form action="/delete-relation" method="POST">
+							<input type="hidden" name="person2_first_name" value="<%= relation.person1_first_name %>">
+							<input type="hidden" name="person2_last_name" value="<%= relation.person1_last_name %>">
+							<input type="hidden" name="person1_first_name" value="<%= relation.person2_first_name %>">
+							<input type="hidden" name="person1_last_name" value="<%= relation.person2_last_name %>">
+							<input type="hidden" name="relation" value="<%= relation.relation %>">
+							<button type="submit">Delete</button>
+						</form>
+					</td>
+				</tr>
+			<% } %>
 		</table>
 	</body>
 </html>

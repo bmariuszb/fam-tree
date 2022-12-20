@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>New Relation</title>
+</head>
+<body>
+	<form action="/" method="GET">
+		<button type="submit">Main Page</button>
+	</form>
+	<form action="/new-relation" method="POST">
+		<table>
+			<thead>
+				<tr>
+					<th>Person</th>
+					<th>Relation</th>
+					<th>Person</th>
+				</tr>
+			</thead>
+			<tr>
+				<td>
+					<select id="person1_select" name="person1_select">
+					<option value=""></option>
+					<% for (let person of locals.persons) { %>
+						<option value="<%= person.first_name %> <%= person.last_name %>"><%= person.first_name %> <%= person.last_name %></option>
+					<% } %>
+					</select>
+					<input type="hidden" id="person1_first_name" name="person1_first_name">
+					<input type="hidden" id="person1_last_name" name="person1_last_name">
+				</td>
+				<td>
+					<label for="relation_type">Is a </label>
+					<select id="relation_type" name="relation_type">
+						<option value="husband">Husband of</option>
+						<option value="wife">Wife of</option>
+						<option value="boyfriend">Boyfriend of</option>
+						<option value="girlfriend">Girlfriend of</option>
+						<option value="daughter">Daughter of</option>
+						<option value="son">Son of</option>
+					</select><br>
+				</td>
+				<td>
+					<select id="person2_select" name="person2_select">
+					<option value=""></option>
+					<% for (let person of locals.persons) { %>
+						<option value="<%= person.first_name %> <%= person.last_name %>"><%= person.first_name %> <%= person.last_name %></option>
+					<% } %>
+					</select>
+					<input type="hidden" id="person2_first_name" name="person2_first_name">
+					<input type="hidden" id="person2_last_name" name="person2_last_name">
+					<% let script = `
+					<script>
+						let person1_select = document.getElementById("person1_select");
+						let person1_first_name_input = document.getElementById("person1_first_name");
+						let person1_last_name_input = document.getElementById("person1_last_name");
+						let person2_select = document.getElementById("person2_select");
+						let person2_first_name_input = document.getElementById("person2_first_name");
+						let person2_last_name_input = document.getElementById("person2_last_name");
+
+						person1_select.addEventListener("change", function() {
+						let value = person1_select.value;
+						let first_name = value.split(" ")[0];
+						let last_name = value.split(" ")[1];
+						person1_first_name_input.value = first_name;
+						person1_last_name_input.value = last_name;
+						});
+
+						person2_select.addEventListener("change", function() {
+						let value = person2_select.value;
+						let first_name = value.split(" ")[0];
+						let last_name = value.split(" ")[1];
+						person2_first_name_input.value = first_name;
+						person2_last_name_input.value = last_name;
+						});
+					</script>
+					` %>
+					<%- script %>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<button type="submit">Submit</button>
+				</td>
+			</tr>
+		</table>
+	</form> 
+</body>
+</html>

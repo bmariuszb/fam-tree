@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Change Person</title>
+	</head>
+	<body>
+		<form action="/" method="GET">
+			<button type="submit">Main Page</button>
+		</form>
+		<form action="/update-person" method="POST" enctype="application/json">
+			<label for="first_name">First Name:</label><br>
+			<input type="text" id="first_name" name="new_first_name" value="<%= locals.first_name %>"><br>
+			<label for="last_name">Last Name:</label><br>
+			<input type="text" id="last_name" name="new_last_name" value="<%= locals.last_name %>"><br><br>
+			<input type="hidden" name="first_name" value="<%= locals.first_name %>">
+			<input type="hidden" name="last_name" value="<%= locals.last_name %>">
+			<input type="submit" value="Update">
+		</form>
+	</body>
+</html>
+

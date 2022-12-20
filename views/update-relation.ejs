@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Change Relation</title>
+</head>
+<body>
+	<form action="/" method="GET">
+		<button type="submit">Main Page</button>
+	</form>
+	<form action="/update-relation" method="POST">
+		<table>
+			<thead>
+				<tr>
+					<th>Person</th>
+					<th>Relation</th>
+					<th>Person</th>
+				</tr>
+			</thead>
+			<tr>
+				<td>
+					<input type="text" name="person1" value="<%= person1.first_name + ' ' + person1.last_name %>" readonly>
+					<input type="hidden" id="person1_first_name" name="person1_first_name" value="<%= person1.first_name %>">
+					<input type="hidden" id="person1_last_name" name="person1_last_name" value="<%= person1.last_name %>">
+				</td>
+				<td>
+					<label for="relation_type">Is a </label>
+					<select id="relation_type" name="relation">
+						<option value="husband" <%= rel_type === 'husband' ? 'selected' : '' %>>Husband of</option>
+						<option value="wife" <%= rel_type === 'wife' ? 'selected' : '' %>>Wife of</option>
+						<option value="boyfriend" <%= rel_type === 'boyfriend' ? 'selected' : '' %>>Boyfriend of</option>
+						<option value="girlfriend" <%= rel_type === 'girlfriend' ? 'selected' : '' %>>Girlfriend of</option>
+						<option value="daughter" <%= rel_type === 'daughter' ? 'selected' : '' %>>Daughter of</option>
+						<option value="son" <%= rel_type === 'son' ? 'selected' : '' %>>Son of</option>
+					</select>
+				</td>
+				<td>
+					<input type="text" name="person2" value="<%= person2.first_name + ' ' + person2.last_name %>" readonly>
+					<input type="hidden" id="person2_first_name" name="person2_first_name" value="<%= person2.first_name %>">
+					<input type="hidden" id="person2_last_name" name="person2_last_name" value="<%= person2.last_name %>">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<button type="submit">Submit</button>
+				</td>
+			</tr>
+		</table>
+	</form> 
+</body>
+</html>
+

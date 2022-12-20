@@ -14,8 +14,9 @@ const driver = neo4j.driver(process.env.DB_URI, neo4j.auth.basic(process.env.DB_
 app.get('/', async (req, res) => {
 	const persons = await get_persons()
 	const relations = await get_relations()
+	const data = await get_data()
 
-	res.render('index', { persons: persons, relations: relations })
+	res.render('index', { persons: persons, relations: relations, data: data })
 })
 
 app.get('/new-person', (req, res) => {
@@ -83,17 +84,19 @@ app.post('/update-relation', async (req, res) => {
 	const person2 = { first_name: req.body.person2_first_name,
 		last_name: req.body.person2_last_name }
 	const rel_type = req.body.relation
-	await update_relation(person1, person2, rel_type)
+	const old_rel_type = req.body.old_relation
+	console.log(old_rel_type)
+	await update_relation(person1, person2, rel_type, old_rel_type)
 
 	res.redirect('/')
 })
 
 app.post('/delete-relation', async (req, res) => {
-	const person1 = { first_name: req.query.person1_first_name,
-		last_name: req.query.person1_last_name }
-	const person2 = { first_name: req.query.person2_first_name,
-		last_name: req.query.person2_last_name }
-	const rel_type = req.query.relation
+	const person1 = { first_name: req.body.person1_first_name,
+		last_name: req.body.person1_last_name }
+	const person2 = { first_name: req.body.person2_first_name,
+		last_name: req.body.person2_last_name }
+	const rel_type = req.body.relation
 	await delete_relation(person1, person2, rel_type)
 	res.redirect('/')
 })
@@ -113,8 +116,10 @@ async function get_persons() {
 
 	let persons = []
 	result.records.forEach((record) => {
+		id = record.get('a').identity.low
 		record = record._fields[0].properties
-		persons.push({ first_name: record.first_name,
+		persons.push({ id: id,
+			first_name: record.first_name,
 			last_name: record.last_name })
 	})
 	return persons
@@ -201,7 +206,7 @@ async function create_new_relation(person1, person2, rel_type) {
 	}
 }
 
-async function update_relation(person2, person1, rel_type) {
+async function update_relation(person2, person1, rel_type, old_rel_type) {
 	if (!person1 || !person2 ||
 		!person1.first_name ||
 		!person1.last_name ||
@@ -235,7 +240,8 @@ async function delete_relation(person2, person1, rel_type) {
 		return console.log('Invalid person data');
 	}
 
-	let query = `MATCH (p1:Person { first_name:"${person1.first_name}", last_name:"${person1.last_name}" })-[r]->`;
+	let query = `MATCH (p1:Person { first_name:"${person1.first_name}", last_name:"${person1.last_name}" })`;
+	query += `-[r:${rel_type}]->`;
 	query += `(p2:Person { first_name:"${person2.first_name}", last_name:"${person2.last_name}" }) `;
 	query += `DELETE r `;
 
@@ -246,4 +252,43 @@ async function delete_relation(person2, person1, rel_type) {
 	} catch(error) {
 		console.error(error)
 	}
+}
+
+async function get_data() {
+	let result = null
+	try {
+		const session = driver.session()
+		result = await session.run(
+		'MATCH (p1:Person)-[r]->(p2:Person) RETURN p1, r, p2')
+		await session.close()
+	} catch(error) {
+		console.error(error)
+	}
+
+	const data = {
+		nodes: [],
+		relationships: []
+	};
+
+	result.records.forEach(record => {
+		const p = record.get("p1").properties;
+
+		const existingElement = data.nodes.find(obj => obj.id === record.get("p1").identity.low);
+		if (!existingElement) {
+			data.nodes.push({
+				id: record.get("p1").identity.low,
+				first_name: p.first_name,
+				last_name: p.last_name
+			});
+		}
+		data.relationships.push({
+			source: record.get("p1").identity.low,
+			target: record.get("p2").identity.low,
+			type: record.get("r").type
+		});
+	});
+
+	data.nodes = await get_persons()
+
+	return data
 }

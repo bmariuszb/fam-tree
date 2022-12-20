@@ -4,6 +4,10 @@
 		<meta charset="UTF-8">
 		<title>Family tree</title>
 		<style>
+			body {
+				height: 100%;
+				width: 100%;
+			}
 			table {
 				border-collapse: collapse;
 				border: 1px solid black;
@@ -14,15 +18,23 @@
 				padding: 10px;
 			}
 		</style>
+		<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 	</head>
 	<body>
-		<form action="/new-person" method="GET">
-			<button type="submit">New Person</button>
-		</form>
-		<form action="/new-relation" method="GET">
-			<button type="submit">New Relation</button>
-		</form>
-		<table>
+		<table style="margin: 0; width: 98.5%;"><td>
+			<table style="border: 0; margin: auto;">
+				<td style="border: 0;">
+					<form action="/new-person" method="GET">
+						<button type="submit">New Person</button>
+					</form>
+				</td>
+				<td style="border: 0;">
+					<form action="/new-relation" method="GET">
+						<button type="submit">New Relation</button>
+					</form>
+				</td>
+			</table>
+		<table style="margin: auto;">
 			<thead>
 				<tr>
 					<th colspan="4">Persons</th>
@@ -96,5 +108,37 @@
 				</tr>
 			<% } %>
 		</table>
+			</td>
+			<td>
+				<div style="margin: 0; width: 100%; height: 100%;" id="graph"></div>
+			</td></table>
+		<script type="text/javascript">
+			const data = <%- JSON.stringify(data) %>;
+			const nodes = data.nodes.map(node => ({
+				id: node.id,
+				label: node.first_name + " " + node.last_name
+			}));
+			const edges = data.relationships.map(relationship => ({
+				from: relationship.source,
+				to: relationship.target,
+				label: relationship.type
+			}));
+
+			var graph = {
+				nodes: nodes,
+				edges: edges,
+				};
+			const options = {
+				edges: {
+					arrows: 'to'
+				},
+				height: '100%',
+				width: '100%'
+			};
+
+			var container = document.getElementById("graph");
+			const network = new vis.Network(container, graph, options);
+			network.fit();
+		</script>
 	</body>
 </html>

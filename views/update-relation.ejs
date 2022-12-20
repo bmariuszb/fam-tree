@@ -33,6 +33,7 @@
 						<option value="daughter" <%= rel_type === 'daughter' ? 'selected' : '' %>>Daughter of</option>
 						<option value="son" <%= rel_type === 'son' ? 'selected' : '' %>>Son of</option>
 					</select>
+					<input type="hidden" name="old_relation" value="<%= rel_type %>">
 				</td>
 				<td>
 					<input type="text" name="person2" value="<%= person2.first_name + ' ' + person2.last_name %>" readonly>

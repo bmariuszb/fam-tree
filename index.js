@@ -69,6 +69,23 @@ app.post('/new-relation', async (req, res) => {
 	res.redirect('/')
 })
 
+
+app.get('/search-relations', async (req, res) => {
+	const persons = await get_persons()
+	res.render('search-relations', { persons: persons })
+})
+
+app.post('/search-relations', async (req, res) => {
+	const person1 = { first_name: req.body.person1.split(' ')[0],
+		last_name: req.body.person1.split(' ')[1] }
+	const person2 = { first_name: req.body.person2.split(' ')[0],
+		last_name: req.body.person2.split(' ')[1] }
+	const persons = await get_persons()
+
+	const [nodes, relationships] = await get_relations_between(person1, person2)
+	res.render('search-relations', {data: {nodes, relationships}, persons})
+})
+
 app.get('/update-relation', (req, res) => {
 	const person1 = { first_name: req.query.person1_first_name,
 		last_name: req.query.person1_last_name }
@@ -291,4 +308,50 @@ async function get_data() {
 	data.nodes = await get_persons()
 
 	return data
+}
+
+async function get_relations_between(person1, person2) {
+	let result = null
+	try {
+		const session = driver.session()
+		result = await session.run(
+		`OPTIONAL MATCH (start:Person {first_name: "${person1.first_name}", ` + 
+		`last_name: "${person1.last_name}"}), (end:Person ` +
+		`{first_name: "${person2.first_name}", last_name: "${person2.last_name}"}) ` +
+		`MATCH path = allShortestPaths((start)-[*..20]-(end)) ` +
+		`RETURN path`)
+		await session.close()
+	} catch(error) {
+		console.error(error)
+	}
+
+
+	let relations = []
+	let persons = []
+	result.records.forEach((record) => {
+		record._fields[0].segments.forEach((record) => {
+			relations.push({ source: record.start.identity.low,
+				target: record.end.identity.low,
+				type: record.relationship.type,
+			})
+
+			const person1 = { first_name: record.start.properties.first_name,
+				last_name: record.start.properties.last_name,
+				id: record.start.identity.low }
+
+			if (!persons.find(p => p.id == person1.id)) {
+				persons.push(person1);
+			}
+
+			const person2 = { first_name: record.end.properties.first_name,
+				last_name: record.end.properties.last_name,
+				id: record.end.identity.low }
+
+			if (!persons.find(p => p.id == person2.id)) {
+				persons.push(person2);
+			}
+		})
+	})
+
+	return [persons, relations]
 }

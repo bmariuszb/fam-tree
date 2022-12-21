@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Search Relation</title>
+	<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+<body>
+	<form action="/" method="GET">
+		<button type="submit">Main Page</button>
+	</form>
+	<form action="/search-relations" method="POST">
+		<table>
+			<thead>
+				<tr>
+					<th>Person 1</th>
+					<th>Person 2</th>
+				</tr>
+			</thead>
+			<tr>
+				<td>
+					<select id="person1" name="person1">
+					<option value=""></option>
+					<% for (let person of locals.persons) { %>
+						<option value="<%= person.first_name %> <%= person.last_name %>"><%= person.first_name %> <%= person.last_name %></option>
+					<% } %>
+					</select>
+				</td>
+				<td>
+					<select id="person2" name="person2">
+					<option value=""></option>
+					<% for (let person of locals.persons) { %>
+						<option value="<%= person.first_name %> <%= person.last_name %>"><%= person.first_name %> <%= person.last_name %></option>
+					<% } %>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<button type="submit">Search</button>
+				</td>
+			</tr>
+		</table>
+	</form> 
+		<div style="height: 100%; display: flex; align-items: flex-start;" id="graph"></div>
+		<script type="text/javascript">
+			const data = <%- JSON.stringify(locals.data) %>;
+			const nodes = data.nodes.map(node => ({
+				id: node.id,
+				label: node.first_name + " " + node.last_name
+			}));
+			const edges = data.relationships.map(relationship => ({
+				from: relationship.source,
+				to: relationship.target,
+				label: relationship.type
+			}));
+
+			var graph = {
+				nodes: nodes,
+				edges: edges,
+				};
+			const options = {
+				edges: {
+					arrows: 'to',
+					length: 300,
+					smooth: {
+						roundness: 0.2,
+						type: 'dynamic',
+					},
+				},
+				height: '500px',
+			};
+
+			var container = document.getElementById("graph");
+			const network = new vis.Network(container, graph, options);
+			network.fit();
+		</script>
+
+</body>
+</html>
